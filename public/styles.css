@@ -3,24 +3,24 @@
    Cal cálida + tinta violeta noche + fosforescentes de cartel chicha.
    ========================================================================== */
 :root {
-  --cal: #FFF6E5;
-  --cal-2: #F6E9CF;
-  --tinta: #1B1033;
-  --tinta-2: #33265A;
-  --gris: #6E6680;
-  --linea: #E2D3B5;
-  --magenta: #E5007E;
-  --naranja: #FF6B00;
-  --amarillo: #FFD400;
-  --limon: #A6D400;
-  --celeste: #00A6E0;
-  --bajo: #A6D400;
-  --medio: #FFB000;
-  --alto: #E5007E;
+  --cal: #F4F6F9;
+  --cal-2: #E6ECF2;
+  --tinta: #1F3A5F;
+  --tinta-2: #3B5476;
+  --gris: #5F6B7A;
+  --linea: #D3DBE4;
+  --magenta: #1D6FA8;
+  --naranja: #C9772B;
+  --amarillo: #EFC75E;
+  --limon: #4F9A68;
+  --celeste: #3C8DBC;
+  --bajo: #4F9A68;
+  --medio: #E0A030;
+  --alto: #C0392B;
   --f-display: "Bungee", "Impact", sans-serif;
   --f-body: "Bricolage Grotesque", system-ui, sans-serif;
   --f-mono: "Martian Mono", ui-monospace, monospace;
-  --chicha: linear-gradient(90deg, var(--magenta) 0 25%, var(--naranja) 25% 50%, var(--amarillo) 50% 75%, var(--limon) 75%);
+  --chicha: linear-gradient(90deg, var(--tinta) 0 40%, var(--magenta) 40% 70%, var(--limon) 70% 88%, var(--amarillo) 88%);
   --ease: cubic-bezier(.22, 1, .36, 1);
 }
 
@@ -39,7 +39,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .logo__txt em { font-style: normal; color: var(--amarillo); }
 .logo__zone { font: 600 9px/1 var(--f-mono); letter-spacing: .2em; padding: 5px 7px; background: var(--magenta); color: #fff; transform: rotate(-3deg); }
 .session { display: flex; align-items: center; gap: 10px; }
-.session__who { font: 400 11px/1.2 var(--f-mono); text-align: right; color: #CFC6E4; }
+.session__who { font: 400 11px/1.2 var(--f-mono); text-align: right; color: #C3CFDD; }
 .session__who b { display: block; color: var(--amarillo); font-weight: 600; text-transform: uppercase; letter-spacing: .1em; }
 .pill { border: 2px solid var(--amarillo); background: transparent; color: var(--amarillo); border-radius: 999px; padding: 6px 16px; cursor: pointer; font-weight: 700; transition: background .2s, color .2s; }
 .pill:hover { background: var(--amarillo); color: var(--tinta); }
@@ -49,7 +49,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .stage { display: grid; grid-template-columns: 1fr 460px; height: calc(100vh - 74px); }
 .mapcol { position: relative; border-right: 3px solid var(--tinta); }
 #map { position: absolute; inset: 0; background: var(--cal-2); }
-.leaflet-tile-pane { filter: grayscale(.75) sepia(.45) hue-rotate(-14deg) contrast(.88) brightness(1.06); }
+.leaflet-tile-pane { filter: saturate(.9) brightness(1.02); }
 .leaflet-container { font-family: var(--f-body); }
 .leaflet-control-zoom a { border-radius: 0 !important; background: var(--tinta) !important; color: var(--cal) !important; border-color: var(--tinta) !important; }
 .leaflet-popup-content-wrapper { border-radius: 0; background: var(--cal); box-shadow: 6px 6px 0 var(--tinta); border: 2px solid var(--tinta); }
@@ -60,7 +60,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .hexlabel { font: 400 13px/1 var(--f-display); color: var(--tinta); text-align: center; text-shadow: 0 0 3px var(--cal), 0 0 3px var(--cal); white-space: nowrap; }
 .cp { width: 26px; height: 26px; border-radius: 50%; background: var(--celeste); border: 3px solid var(--cal); box-shadow: 0 0 0 2px var(--tinta); display: grid; place-items: center; color: #fff; font: 400 12px/1 var(--f-display); }
 .cp.is-hit { background: var(--amarillo); color: var(--tinta); animation: pulse 1.2s var(--ease) infinite; }
-@keyframes pulse { 50% { box-shadow: 0 0 0 2px var(--tinta), 0 0 0 10px rgba(255, 212, 0, .35); } }
+@keyframes pulse { 50% { box-shadow: 0 0 0 2px var(--tinta), 0 0 0 10px rgba(239, 199, 94, .45); } }
 
 .key { position: absolute; z-index: 500; left: 14px; top: 14px; background: var(--cal); border: 2px solid var(--tinta); box-shadow: 5px 5px 0 var(--tinta); padding: 10px 12px; }
 .key__t { margin: 0 0 6px; font: 600 9px/1 var(--f-mono); letter-spacing: .16em; text-transform: uppercase; }
@@ -117,13 +117,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .login { margin: 0; padding: 16px 26px 18px; background: var(--tinta); color: var(--cal); border-bottom: 3px solid var(--magenta); }
 .login__t { margin: 0 0 10px; font: 400 15px/1.1 var(--f-display); color: var(--amarillo); }
 .login input { width: 100%; margin-bottom: 8px; padding: 10px 12px; border: 2px solid var(--cal); background: transparent; color: var(--cal); }
-.login input::placeholder { color: #A99FC6; }
+.login input::placeholder { color: #9FB0C4; }
 .login__row { display: grid; grid-template-columns: 1fr 1.3fr; gap: 8px; }
 .login .btn { box-shadow: 3px 3px 0 var(--amarillo); background: var(--cal); color: var(--tinta); border-color: var(--cal); }
 .login .btn--line { background: transparent; color: var(--cal); }
 .note { min-height: 1.2em; margin: 8px 0 0; font: 400 11px/1.4 var(--f-mono); }
-.note.ok { color: var(--limon); } .note.err { color: #FF7AB8; }
-.view .note.ok { color: #4E7A00; } .view .note.err { color: var(--magenta); }
+.note.ok { color: var(--limon); } .note.err { color: #F2A39A; }
+.view .note.ok { color: #2F7A47; } .view .note.err { color: var(--alto); }
 
 /* ---------- 01 Puntos críticos ---------- */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
@@ -165,7 +165,7 @@ textarea { min-height: 80px; resize: vertical; }
 
 /* Sellos de jebe para los estados */
 .stamp { display: inline-block; padding: 4px 8px 3px; border: 3px double currentColor; font: 400 11px/1 var(--f-display); letter-spacing: .06em; text-transform: uppercase; transform: rotate(-4deg); }
-.stamp--reportado { color: var(--naranja); } .stamp--validado { color: var(--magenta); } .stamp--atendido { color: #5E8A00; }
+.stamp--reportado { color: var(--naranja); } .stamp--validado { color: var(--magenta); } .stamp--atendido { color: #2F7A47; }
 .ticket .stamp { position: absolute; right: 14px; top: 16px; font-size: 14px; }
 
 /* ---------- 03 Mascota ---------- */

@@ -4,7 +4,7 @@
    Huella Limpia · frontend
    ========================================================================== */
 
-const LEVEL = { bajo: '#A6D400', medio: '#FFB000', alto: '#E5007E' };
+const LEVEL = { bajo: '#4F9A68', medio: '#E0A030', alto: '#C0392B' };
 const LEVEL_TXT = { bajo: 'Baja', medio: 'Media', alto: 'Alta' };
 const TYPES = { heces: 'Heces', orina: 'Orina en fachada', mascota_suelta: 'Mascota suelta', foco_infeccioso: 'Foco infeccioso' };
 const KIND = { dispensador: ['B', 'Bolsas'], tacho: ['T', 'Tacho'], pipican: ['Z', 'Zona canina'] };
@@ -23,10 +23,10 @@ const fmtDate = (iso) => new Date(iso).toLocaleDateString('es-PE', { day: '2-dig
 /* ---------- Iconos propios (trazo grueso, colores chicha) ---------- */
 function icon(type) {
   const g = {
-    heces: '<path d="M10 32 H30 C33 32 33 27 29 27 C32 26 31 21 27 21 C29 18 26 14 22 15 C20 11 15 12 16 17 C12 17 11 22 14 23 C9 24 9 32 10 32 Z" fill="#FF6B00" stroke="#1B1033" stroke-width="2.4" stroke-linejoin="round"/><circle cx="17" cy="26" r="1.4" fill="#1B1033"/><circle cx="24" cy="26" r="1.4" fill="#1B1033"/>',
-    orina: '<path d="M20 5 C20 5 9 18 9 25 A11 11 0 0 0 31 25 C31 18 20 5 20 5 Z" fill="#FFD400" stroke="#1B1033" stroke-width="2.4"/><path d="M14 25 A6 6 0 0 0 20 31" fill="none" stroke="#1B1033" stroke-width="2"/>',
-    mascota_suelta: '<path d="M6 30 V22 L10 14 L14 18 H26 L30 12 L33 16 V30 M12 30 V24 M28 30 V24" fill="none" stroke="#1B1033" stroke-width="2.6" stroke-linejoin="round"/><path d="M10 14 L8 8 L13 12 Z" fill="#E5007E" stroke="#1B1033" stroke-width="1.6"/><circle cx="31" cy="15" r="1.3" fill="#1B1033"/>',
-    foco_infeccioso: '<circle cx="20" cy="20" r="5" fill="#E5007E" stroke="#1B1033" stroke-width="2.2"/><circle cx="20" cy="9" r="5" fill="none" stroke="#1B1033" stroke-width="2.4"/><circle cx="10" cy="26" r="5" fill="none" stroke="#1B1033" stroke-width="2.4"/><circle cx="30" cy="26" r="5" fill="none" stroke="#1B1033" stroke-width="2.4"/>'
+    heces: '<path d="M10 32 H30 C33 32 33 27 29 27 C32 26 31 21 27 21 C29 18 26 14 22 15 C20 11 15 12 16 17 C12 17 11 22 14 23 C9 24 9 32 10 32 Z" fill="#C9772B" stroke="#1F3A5F" stroke-width="2.4" stroke-linejoin="round"/><circle cx="17" cy="26" r="1.4" fill="#1F3A5F"/><circle cx="24" cy="26" r="1.4" fill="#1F3A5F"/>',
+    orina: '<path d="M20 5 C20 5 9 18 9 25 A11 11 0 0 0 31 25 C31 18 20 5 20 5 Z" fill="#EFC75E" stroke="#1F3A5F" stroke-width="2.4"/><path d="M14 25 A6 6 0 0 0 20 31" fill="none" stroke="#1F3A5F" stroke-width="2"/>',
+    mascota_suelta: '<path d="M6 30 V22 L10 14 L14 18 H26 L30 12 L33 16 V30 M12 30 V24 M28 30 V24" fill="none" stroke="#1F3A5F" stroke-width="2.6" stroke-linejoin="round"/><path d="M10 14 L8 8 L13 12 Z" fill="#1D6FA8" stroke="#1F3A5F" stroke-width="1.6"/><circle cx="31" cy="15" r="1.3" fill="#1F3A5F"/>',
+    foco_infeccioso: '<circle cx="20" cy="20" r="5" fill="#1D6FA8" stroke="#1F3A5F" stroke-width="2.2"/><circle cx="20" cy="9" r="5" fill="none" stroke="#1F3A5F" stroke-width="2.4"/><circle cx="10" cy="26" r="5" fill="none" stroke="#1F3A5F" stroke-width="2.4"/><circle cx="30" cy="26" r="5" fill="none" stroke="#1F3A5F" stroke-width="2.4"/>'
   }[type] || '';
   return `<svg viewBox="0 0 40 40" aria-hidden="true">${g}</svg>`;
 }
@@ -71,7 +71,7 @@ function drawZones() {
   hexes.clear();
   for (const z of state.zones) {
     const poly = L.polygon(hexagon(z.lat, z.lng, 0.6), {
-      color: '#1B1033', weight: 2, fillColor: LEVEL[z.level], fillOpacity: 0.78
+      color: '#1F3A5F', weight: 2, fillColor: LEVEL[z.level], fillOpacity: 0.5
     }).bindPopup(
       `<span class="pp__k">${esc(district(z.district).name)} · ${z.activeReports} reportes validados</span>` +
       `<span class="pp__t">${esc(z.name)}</span>Criticidad <b>${LEVEL_TXT[z.level]}</b> (${z.criticality})`
@@ -167,7 +167,7 @@ function renderRank() {
   $('rank').querySelectorAll('li').forEach((li, i) => {
     li.style.animationDelay = `${i * 45}ms`;
     li.querySelector('.rank__n').style.background = LEVEL[li.querySelector('.rank__n').dataset.l];
-    li.querySelector('.rank__lvl').style.color = li.dataset.z && zone(li.dataset.z).level === 'bajo' ? '#5E8A00' : LEVEL[zone(li.dataset.z).level];
+    li.querySelector('.rank__lvl').style.color = li.dataset.z && zone(li.dataset.z).level === 'bajo' ? '#2F7A47' : LEVEL[zone(li.dataset.z).level];
   });
   const bounds = list.map((z) => [z.lat, z.lng]);
   if (state.district !== 'ALL' && bounds.length) map.fitBounds(bounds, { padding: [60, 60], maxZoom: 15, animate: false });
