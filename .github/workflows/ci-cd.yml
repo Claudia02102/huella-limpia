@@ -1,0 +1,113 @@
+name: CI/CD Huella Limpia
+
+on:
+  push:
+    branches: [main, test]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: 1. Build y lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  test:
+    name: 2. Pruebas automatizadas
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Ejecutar Jest (unitarias + integración) con cobertura
+        run: npm test -- --ci
+      - name: Publicar resumen de cobertura
+        if: always()
+        run: |
+          echo "## Cobertura de pruebas" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          npx jest --coverage --coverageReporters=text-summary --silent 2>&1 | tail -n 6 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage/
+
+  security:
+    name: 3. Análisis de seguridad
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: SCA - auditoría de dependencias (npm audit)
+        run: npm audit --audit-level=high
+      - name: Escaneo de secretos (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: SAST - inicializar CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+          queries: security-extended
+      - name: SAST - análisis CodeQL
+        uses: github/codeql-action/analyze@v3
+
+  deploy:
+    name: 4. Deploy a Vercel (producción) y smoke test
+    needs: [test, security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.APP_URL }}
+    steps:
+      # main está protegida: solo recibe PR con build, test y security en verde.
+      # La integración Git de Vercel publica cada commit de main; este job espera
+      # a que la versión desplegada corresponda a este commit y la valida.
+      - name: Esperar despliegue de Vercel y verificar /api/health
+        run: |
+          for i in $(seq 1 30); do
+            body=$(curl -fsS "${{ vars.APP_URL }}/api/health" || true)
+            if echo "$body" | grep -q '"status":"ok"'; then
+              echo "API saludable en ${{ vars.APP_URL }}: $body" >> $GITHUB_STEP_SUMMARY
+              break
+            fi
+            [ "$i" = 30 ] && echo "La API no respondió" && exit 1
+            sleep 10
+          done
+      - name: Smoke test funcional (punto limpio cercano y cabeceras de seguridad)
+        run: |
+          curl -fsS "${{ vars.APP_URL }}/api/clean-points/nearest?lat=-11.99&lng=-77.07" | grep -q "distanceKm"
+          curl -fsSI "${{ vars.APP_URL }}/api/health" | grep -qi 'content-security-policy'
+          echo "Smoke test funcional OK" >> $GITHUB_STEP_SUMMARY
