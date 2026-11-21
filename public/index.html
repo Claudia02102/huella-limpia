@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Huella Limpia · Lima Norte</title>
+  <meta name="description" content="Reporta puntos críticos, registra a tu mascota y sigue la fiscalización en Lima Norte.">
+  <meta name="theme-color" content="#1B1033">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Martian+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="./" aria-label="Huella Limpia, inicio">
+      <svg class="logo__paw" viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="12" cy="17" r="5" fill="#FFD400"/><circle cx="20" cy="9" r="5" fill="#FF6B00"/>
+        <circle cx="30" cy="9" r="5" fill="#E5007E"/><circle cx="38" cy="17" r="5" fill="#A6D400"/>
+        <path d="M25 46 C25 46 12 34 12 27 A8 8 0 0 1 25 21 A8 8 0 0 1 38 27 C38 34 25 46 25 46 Z" fill="#FFF6E5"/>
+        <circle cx="25" cy="28" r="3.4" fill="#1B1033"/>
+      </svg>
+      <span class="logo__txt">HUELLA<br><em>LIMPIA</em></span>
+      <span class="logo__zone">LIMA NORTE</span>
+    </a>
+    <div class="session" id="session">
+      <span class="session__who" id="who" hidden></span>
+      <button class="pill" id="btnSession" type="button">Ingresar</button>
+    </div>
+  </header>
+  <div class="band" aria-hidden="true"></div>
+
+  <main class="stage">
+    <section class="mapcol" aria-label="Mapa de Lima Norte">
+      <div id="map"></div>
+      <div class="key" aria-label="Leyenda">
+        <p class="key__t">Criticidad de la zona</p>
+        <ul>
+          <li><i class="hx hx--bajo"></i>Baja</li>
+          <li><i class="hx hx--medio"></i>Media</li>
+          <li><i class="hx hx--alto"></i>Alta</li>
+          <li><i class="dot"></i>Punto limpio</li>
+        </ul>
+      </div>
+    </section>
+
+    <aside class="side">
+      <nav class="tabs" role="tablist" aria-label="Secciones">
+        <button class="tab is-on" role="tab" aria-selected="true" data-view="mapa"><span>01</span>Puntos críticos</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="reportar"><span>02</span>Reportar</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="mascota"><span>03</span>Mi mascota</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="fiscal"><span>04</span>Fiscalización</button>
+      </nav>
+
+      <!-- Login compartido (se despliega desde la cabecera o al intentar una acción) -->
+      <form class="login" id="login" hidden autocomplete="on">
+        <p class="login__t">Ingresa para reportar y registrar mascotas</p>
+        <input id="email" type="email" placeholder="correo@ejemplo.com" autocomplete="username" required>
+        <input id="password" type="password" placeholder="Contraseña · 8+ letras y números" autocomplete="current-password" required>
+        <div class="login__row">
+          <button class="btn btn--line" id="btnRegister" type="button">Crear cuenta</button>
+          <button class="btn" id="btnLogin" type="submit">Ingresar</button>
+        </div>
+        <p class="note" id="loginMsg" role="status"></p>
+      </form>
+
+      <!-- 01 · PUNTOS CRÍTICOS -->
+      <section class="view is-on" id="view-mapa" role="tabpanel">
+        <h1 class="poster">¿Dónde<br><mark>huele</mark> peor?</h1>
+        <p class="lede">Zonas de Lima Norte según los reportes vecinales validados de las últimas semanas.</p>
+        <div class="chips" id="districtChips" role="group" aria-label="Distrito"></div>
+        <ol class="rank" id="rank"></ol>
+        <div class="finder">
+          <div>
+            <p class="finder__t">¿Sin bolsita?</p>
+            <p class="finder__s">Encuentra el punto limpio más cercano</p>
+          </div>
+          <button class="btn btn--sky" id="btnNearest" type="button">Buscar cerca</button>
+        </div>
+        <ul class="near" id="near"></ul>
+      </section>
+
+      <!-- 02 · REPORTAR -->
+      <section class="view" id="view-reportar" role="tabpanel" hidden>
+        <h1 class="poster poster--orange">Reporta<br>el punto</h1>
+        <form class="report" id="reportForm">
+          <p class="lbl">¿Qué encontraste?</p>
+          <div class="types" id="types" role="radiogroup" aria-label="Tipo de reporte"></div>
+          <p class="lbl">¿Dónde?</p>
+          <select id="zone" aria-label="Zona"></select>
+          <p class="lbl">Detalle</p>
+          <textarea id="desc" maxlength="280" placeholder="Ej.: heces acumuladas en la vereda frente al colegio"></textarea>
+          <div class="count"><span id="descCount">0</span>/280</div>
+          <button class="cta" id="btnReport" type="submit"><span>Enviar reporte</span><i class="spin" aria-hidden="true"></i></button>
+        </form>
+        <div id="ticket"></div>
+      </section>
+
+      <!-- 03 · MI MASCOTA -->
+      <section class="view" id="view-mascota" role="tabpanel" hidden>
+        <h1 class="poster poster--green">Tu mascota<br>con placa</h1>
+        <p class="lede">El registro ayuda a la municipalidad a ubicar dueños y planificar campañas de vacunación.</p>
+        <form class="petform" id="petForm">
+          <div class="grid2">
+            <label>Nombre<input id="petName" maxlength="40" placeholder="Rocky" required></label>
+            <label>Raza<input id="petBreed" maxlength="40" placeholder="Mestizo"></label>
+          </div>
+          <div class="seg" role="radiogroup" aria-label="Especie">
+            <button type="button" class="seg__o is-on" data-sp="perro">Perro</button>
+            <button type="button" class="seg__o" data-sp="gato">Gato</button>
+          </div>
+          <div class="grid2">
+            <label>Distrito<select id="petDistrict"></select></label>
+            <label class="check"><input type="checkbox" id="petVax"> Vacunas al día</label>
+          </div>
+          <button class="cta cta--green" id="btnPet" type="submit"><span>Registrar mascota</span><i class="spin" aria-hidden="true"></i></button>
+        </form>
+        <div class="tags" id="tags"></div>
+        <form class="lookup" id="lookupForm">
+          <p class="lbl">¿Encontraste una mascota? Busca su placa</p>
+          <div class="lookup__row">
+            <input id="lookupCode" placeholder="LN-LOL-0001" maxlength="12" aria-label="Código de placa">
+            <button class="btn" type="submit">Buscar</button>
+          </div>
+          <div id="lookupOut"></div>
+        </form>
+      </section>
+
+      <!-- 04 · FISCALIZACIÓN -->
+      <section class="view" id="view-fiscal" role="tabpanel" hidden>
+        <h1 class="poster poster--ink">Fiscali&shy;zación</h1>
+        <p class="lede" id="fiscalLede">Avance por distrito y cola de atención priorizada.</p>
+        <div class="bars" id="bars"></div>
+        <div class="legend3"><span class="s s--rep">Reportado</span><span class="s s--val">Validado</span><span class="s s--ate">Atendido</span></div>
+        <h2 class="sub">Cola de atención</h2>
+        <ol class="queue" id="queue"></ol>
+      </section>
+    </aside>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
