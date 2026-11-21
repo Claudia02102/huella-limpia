@@ -7,7 +7,7 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "lint": "eslint src tests api public",
-    "test": "jest --coverage",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "build": "npm run lint && node -e \"require('./src/app'); console.log('Build OK')\""
   },
   "engines": {
@@ -19,9 +19,11 @@
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.0.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.17",
     "@eslint/js": "^9.17.0",
     "eslint": "^9.17.0",
     "globals": "^15.14.0",
@@ -30,6 +32,10 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "coverageReporters": ["text", "text-summary", "lcov"]
+    "coverageReporters": [
+      "text",
+      "text-summary",
+      "lcov"
+    ]
   }
 }

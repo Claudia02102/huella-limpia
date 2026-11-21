@@ -31,6 +31,15 @@ npm start       # http://localhost:3000
 Cuenta de **inspector de prueba** (solo fuera de producción): `inspector@huellalimpia.test` / `Inspector2026`.
 En producción el inspector se crea con las variables de entorno `INSPECTOR_EMAIL` e `INSPECTOR_PASSWORD`.
 
+## Base de datos (Supabase / PostgreSQL)
+- Si existe la variable `DATABASE_URL`, la app guarda todo en PostgreSQL: al arrancar crea las tablas
+  (`districts`, `zones`, `clean_points`, `reports`, `pets`, `users`), carga los datos de ejemplo si la base está vacía
+  y crea la cuenta de inspector. No hay que ejecutar SQL a mano.
+- Sin `DATABASE_URL` usa un repositorio en memoria (útil para desarrollo rápido y pruebas).
+- `GET /api/health` indica el almacenamiento activo (`postgresql` o `memoria`).
+- En Supabase usa la cadena del *Transaction pooler* (puerto 6543), recomendada para entornos serverless como Vercel.
+- Las pruebas de `tests/db.test.js` usan PostgreSQL real en memoria (PGlite), sin servicios externos.
+
 ## Ramas
 - `main`: producción (despliegue automático a Vercel, rama protegida).
 - `test`: integración y pruebas; se fusiona a `main` mediante Pull Request.
@@ -41,4 +50,4 @@ En producción el inspector se crea con las variables de entorno `INSPECTOR_EMAI
 3. **Security**: `npm audit` (SCA), Gitleaks (secretos), CodeQL (SAST); Dependabot semanal.
 4. **Deploy**: integración Git de Vercel sobre `main` + smoke test de la versión desplegada.
 
-Variables: `APP_URL` (GitHub). En Vercel: `JWT_SECRET`, `INSPECTOR_EMAIL`, `INSPECTOR_PASSWORD`.
+Variables: `APP_URL` (GitHub). En Vercel: `JWT_SECRET`, `INSPECTOR_EMAIL`, `INSPECTOR_PASSWORD`, `DATABASE_URL`.
