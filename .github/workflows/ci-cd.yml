@@ -47,7 +47,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --coverageReporters=text-summary --silent 2>&1 | tail -n 6 >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage
