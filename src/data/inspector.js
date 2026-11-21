@@ -8,12 +8,19 @@ const store = require('./store');
 // En desarrollo y pruebas se usa una cuenta de prueba documentada en el README.
 const DEV_INSPECTOR = { email: 'inspector@huellalimpia.test', password: 'Inspector2026' };
 
-function seedInspector() {
+function inspectorCredentials() {
   const prod = process.env.NODE_ENV === 'production';
-  const email = (process.env.INSPECTOR_EMAIL || (prod ? '' : DEV_INSPECTOR.email)).toLowerCase();
+  const email = (process.env.INSPECTOR_EMAIL || (prod ? '' : DEV_INSPECTOR.email)).toLowerCase().trim();
   const password = process.env.INSPECTOR_PASSWORD || (prod ? '' : DEV_INSPECTOR.password);
-  if (!email || !password || store.users().some((u) => u.email === email)) return null;
-  return store.addUser({ email, passwordHash: bcrypt.hashSync(password, 10), role: 'inspector' });
+  return email && password ? { email, password } : null;
 }
 
-module.exports = { seedInspector, DEV_INSPECTOR };
+/** Modo en memoria: crea la cuenta en el repositorio (con base de datos lo hace db.init()). */
+function seedInspector() {
+  const cred = inspectorCredentials();
+  if (store.persistent() || !cred || store.users().some((u) => u.email === cred.email)) return;
+  // En memoria addUser no espera nada: la cuenta queda creada de inmediato.
+  store.addUser({ email: cred.email, passwordHash: bcrypt.hashSync(cred.password, 10), role: 'inspector' });
+}
+
+module.exports = { seedInspector, inspectorCredentials, DEV_INSPECTOR };
